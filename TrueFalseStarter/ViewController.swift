@@ -12,14 +12,14 @@ import AudioToolbox
 
 class ViewController: UIViewController {
     
-    let questionsPerRound = 4
+    let questionsPerRound = 14
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
     
     var gameSound: SystemSoundID = 0
     
-    let triviaModel = TriviaModel()
+    var triviaModel = TriviaModel()
     
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var trueButton: UIButton!
@@ -41,10 +41,16 @@ class ViewController: UIViewController {
     }
     
     func displayQuestion() {
+        
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.trivia.count)
         let questionDictionary = triviaModel.trivia[indexOfSelectedQuestion]
-        questionField.text = questionDictionary["Question"]
-        playAgainButton.isHidden = true
+        if (!triviaModel.askedQuestions.contains(questionDictionary["Question"]!)) {
+            questionField.text = questionDictionary["Question"]
+            playAgainButton.isHidden = true
+            triviaModel.askedQuestions.append(questionDictionary["Question"]!)
+        } else {
+            displayQuestion()
+        }
     }
     
     func displayScore() {
@@ -52,7 +58,7 @@ class ViewController: UIViewController {
         trueButton.isHidden = true
         falseButton.isHidden = true
         
-        // Display play again button
+        // Display plavargain button
         playAgainButton.isHidden = false
         
         questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
@@ -65,14 +71,14 @@ class ViewController: UIViewController {
         
         let selectedQuestionDict = triviaModel.trivia[indexOfSelectedQuestion]
         let correctAnswer = selectedQuestionDict["Answer"]
-        
-        if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
-            correctQuestions += 1
-            questionField.text = "Correct!"
-        } else {
-            questionField.text = "Sorry, wrong answer!"
+        if (correctAnswer == "True" || correctAnswer == "False") {
+            if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
+                correctQuestions += 1
+                questionField.text = triviaModel.correct
+            } else {
+                questionField.text = triviaModel.incorrect
+            }
         }
-        
         loadNextRoundWithDelay(seconds: 2)
     }
     
