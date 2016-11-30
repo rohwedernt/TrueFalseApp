@@ -81,7 +81,7 @@ class ViewController: UIViewController {
         
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
         let correctAnswer = selectedQuestionObj.answer
-        if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
+        if (sender === trueButton &&  correctAnswer == 1) || (sender === falseButton && correctAnswer == 0) {
             correctQuestions += 1
             questionField.text = correctTxt
         } else {
