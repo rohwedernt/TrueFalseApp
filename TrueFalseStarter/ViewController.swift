@@ -19,8 +19,6 @@ class ViewController: UIViewController {
     
     var gameSound: SystemSoundID = 0
     
-    var triviaModel = TriviaModel()
-    
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var trueButton: UIButton!
     @IBOutlet weak var falseButton: UIButton!
@@ -42,12 +40,24 @@ class ViewController: UIViewController {
     
     func displayQuestion() {
         
-        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.trivia.count)
-        let questionDictionary = triviaModel.trivia[indexOfSelectedQuestion]
-        if (!triviaModel.askedQuestions.contains(questionDictionary["Question"]!)) {
-            questionField.text = questionDictionary["Question"]
+        indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.count)
+        let questionObj = triviaModel[indexOfSelectedQuestion]
+        if (!askedQuestions.contains(indexOfSelectedQuestion)) {
+            questionField.text = questionObj.question
             playAgainButton.isHidden = true
-            triviaModel.askedQuestions.append(questionDictionary["Question"]!)
+            switch questionObj.type {
+                case QuestionType.truefalse:
+                    trueButton.isHidden = false
+                    falseButton.isHidden = false
+                case QuestionType.fourOption:
+                    trueButton.setTitle(questionObj.options[1], for: UIControlState.normal)
+                    falseButton.setTitle(questionObj.options[2], for: UIControlState.normal)
+            default: print("Question Type Not Accepted")
+            }
+            
+            
+
+            askedQuestions.append(indexOfSelectedQuestion)
         } else {
             displayQuestion()
         }
@@ -69,15 +79,13 @@ class ViewController: UIViewController {
         // Increment the questions asked counter
         questionsAsked += 1
         
-        let selectedQuestionDict = triviaModel.trivia[indexOfSelectedQuestion]
-        let correctAnswer = selectedQuestionDict["Answer"]
-        if (correctAnswer == "True" || correctAnswer == "False") {
-            if (sender === trueButton &&  correctAnswer == "True") || (sender === falseButton && correctAnswer == "False") {
-                correctQuestions += 1
-                questionField.text = triviaModel.correct
-            } else {
-                questionField.text = triviaModel.incorrect
-            }
+        let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
+        let correctAnswer = selectedQuestionObj.answer
+        if (sender === trueButton &&  correctAnswer == 1) || (sender === falseButton && correctAnswer == 0) {
+            correctQuestions += 1
+            questionField.text = correctTxt
+        } else {
+            questionField.text = incorrectTxt
         }
         loadNextRoundWithDelay(seconds: 2)
     }
