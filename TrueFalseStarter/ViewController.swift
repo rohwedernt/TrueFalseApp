@@ -20,8 +20,10 @@ class ViewController: UIViewController {
     var gameSound: SystemSoundID = 0
     
     @IBOutlet weak var questionField: UILabel!
-    @IBOutlet weak var trueButton: UIButton!
-    @IBOutlet weak var falseButton: UIButton!
+    @IBOutlet weak var ButtonA: UIButton!
+    @IBOutlet weak var ButtonB: UIButton!
+    @IBOutlet weak var ButtonC: UIButton!
+    @IBOutlet weak var ButtonD: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     
 
