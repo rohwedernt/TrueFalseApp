@@ -111,6 +111,10 @@
                     </view>
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
                     <connections>
+                        <outlet property="ButtonA" destination="J1V-MS-ECi" id="B0u-wx-CXA"/>
+                        <outlet property="ButtonB" destination="AS4-HX-g9f" id="GrO-pQ-Co2"/>
+                        <outlet property="ButtonC" destination="vTd-Gx-KI2" id="IDo-Pf-six"/>
+                        <outlet property="ButtonD" destination="f0R-BN-ILi" id="8Du-lM-ef6"/>
                         <outlet property="falseButton" destination="AS4-HX-g9f" id="Xfj-Ws-1ey"/>
                         <outlet property="playAgainButton" destination="K17-uy-MvB" id="0Bx-Cm-ye0"/>
                         <outlet property="questionField" destination="I3V-ih-1Ky" id="7UI-o2-ATi"/>
