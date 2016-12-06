@@ -104,15 +104,10 @@ let triviaModel: [Question] = [
         answer: 3,
         type: QuestionType.fourOption)]
 
-
+var backgroundID: Int = 0
 var askedQuestions: [Int] = []
+var usedButtons: [Int] = []
 let correctTxt = "Correct!"
-let incorrectTxt = "Sorry, wrong answer!"
-
-
-
-
-
-
+let incorrectTxt = "Sorry, that's not it."
 
 
