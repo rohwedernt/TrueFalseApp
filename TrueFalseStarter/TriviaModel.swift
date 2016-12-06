@@ -107,7 +107,9 @@ let triviaModel: [Question] = [
 var backgroundID: Int = 0
 var askedQuestions: [Int] = []
 var usedButtons: [Int] = []
-let correctTxt = "Correct!"
-let incorrectTxt = "Sorry, that's not it."
+let correctResponse = "Correct!"
+let incorrectResponse = "Sorry, that's not it."
+
+
 
 
