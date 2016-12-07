@@ -102,6 +102,8 @@ class ViewController: UIViewController {
                 ButtonB.setTitle(questionObj.options[1], for: UIControlState.normal)
                 ButtonC.setTitle(questionObj.options[2], for: UIControlState.normal)
                 ButtonD.setTitle(questionObj.options[3], for: UIControlState.normal)
+                ButtonC.isHidden = false
+                ButtonD.isHidden = false
             default: print("Question Type Not Accepted")
             }
             askedQuestions.append(indexOfSelectedQuestion)
