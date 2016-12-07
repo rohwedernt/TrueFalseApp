@@ -6,10 +6,14 @@
 //  Copyright © 2016 Treehouse. All rights reserved.
 //
 
+import UIKit
+
+
 enum QuestionType {
     case truefalse
     case fourOption
     case threeOption
+    case mathquiz
 }
 
 struct Question {
@@ -105,11 +109,21 @@ let triviaModel: [Question] = [
         type: QuestionType.fourOption)]
 
 var backgroundID: Int = 0
+var quizID: Int = 0
 var askedQuestions: [Int] = []
-var usedButtons: [Int] = []
 let correctResponse = "Correct!"
 let incorrectResponse = "Sorry, that's not it."
 
+struct ColorWheel {
+        let green = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+        let red = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
+        let teal = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
+    }
 
+struct BackgroundImages {
+        let space = UIColor(patternImage: UIImage(named: "starsbackground.jpg")!)
+        let landscape = UIColor(patternImage: UIImage(named: "landscapebackground.jpg")!)
+        let beach = UIColor(patternImage: UIImage(named: "beachbackground.jpg")!)
+}
 
 

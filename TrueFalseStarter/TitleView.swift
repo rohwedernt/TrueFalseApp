@@ -32,6 +32,14 @@ class TitleView: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func chooseQuizType(_ sender: UIButton) {
+        if (sender === triviaQuiz) {
+            quizID = 0
+        } else if (sender === mathQuiz) {
+            quizID = 1
+        }
+    }
+    
     @IBAction func displayBackground(_ sender: UIButton) {
         if (sender === background1) {
             self.view.backgroundColor = UIColor(patternImage: UIImage(named: "starsbackground.jpg")!)

@@ -35,49 +35,52 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (backgroundID == 1) {
-            self.view.backgroundColor = UIColor(patternImage: UIImage(named: "starsbackground.jpg")!)
-        } else if (backgroundID == 2) {
-            self.view.backgroundColor = UIColor(patternImage: UIImage(named: "beachbackground.jpg")!)
-        } else if (backgroundID == 3) {
-            self.view.backgroundColor = UIColor(patternImage: UIImage(named: "landscapebackground.jpg")!)
+        
+        switch backgroundID {
+        case 1: self.view.backgroundColor = BackgroundImages().space
+        case 2: self.view.backgroundColor = BackgroundImages().beach
+        case 3: self.view.backgroundColor = BackgroundImages().landscape
+        default: print("Background not available")
         }
-        loadGameStartSound()
-        loadAnswerCorrectSound()
-        loadAnswerIncorrectSound()
-        loadGoodGameSound()
-        loadBadGameSound()
+        loadGameSounds()
+        
         // Start game
-        playGameStartSound()
-        displayQuestion()
+        playSound(sound: startSound)
+        selectQuiz()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-//    func displayProblem() {
-//        let buttonAssoc = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
-//        let randomInt = GKRandomSource.sharedRandom().nextInt(upperBound: 200)
-//        let firstTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 100)
-//        let secondTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 100)
-//        let sum = firstTerm + secondTerm
-//        var buttonOptions: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
-//        questionField.text = "\(firstTerm) + \(secondTerm)"
-//        ButtonA.isHidden = false
-//        ButtonB.isHidden = false
-//        ButtonC.isHidden = false
-//        ButtonD.isHidden = false
-//        if (!usedButtons.contains(buttonAssoc)) {
-//        buttonOptions[buttonAssoc]?.setTitle(String(randomInt), for: UIControlState.normal)
-//            displayProblem()
-//            usedButtons.append(buttonAssoc)
-//        } else {
-//            if usedButtons.count < 3 {
-//                displayProblem()
-//            }
-//        }
-//    }
+    
+    func selectQuiz() {
+        if (quizID == 0) {
+            displayQuestion()
+        } else if quizID == 1 {
+            displayProblem()
+        }
+    }
+    
+    var correctButton: Int = 0
+    
+    func displayProblem() {
+        setStartBackgroundColor()
+        let buttonCorrect = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
+        let firstTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 50)
+        let secondTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 50)
+        let answer = firstTerm + secondTerm
+        questionField.text = "\(firstTerm) + \(secondTerm)"
+        var buttonOptions: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
+        for i in 0...3 {
+            if (i == buttonCorrect) {
+                buttonOptions[i]?.setTitle(String(answer), for: UIControlState.normal)
+                correctButton = i
+            } else {
+                buttonOptions[i]?.setTitle(String(GKRandomSource.sharedRandom().nextInt(upperBound: 100)), for: UIControlState.normal)
+            }
+        }
+    }
     
     func displayQuestion() {
         
@@ -90,25 +93,17 @@ class ViewController: UIViewController {
             playAgainButton.isHidden = true
             switch questionObj.type {
             case QuestionType.truefalse:
-                ButtonA.isHidden = false
                 ButtonA.setTitle(questionObj.options[1], for: UIControlState.normal)
-                ButtonB.isHidden = false
                 ButtonB.setTitle(questionObj.options[0], for: UIControlState.normal)
                 ButtonC.isHidden = true
                 ButtonD.isHidden = true
             case QuestionType.fourOption:
-                ButtonA.isHidden = false
                 ButtonA.setTitle(questionObj.options[0], for: UIControlState.normal)
-                ButtonB.isHidden = false
                 ButtonB.setTitle(questionObj.options[1], for: UIControlState.normal)
-                ButtonC.isHidden = false
                 ButtonC.setTitle(questionObj.options[2], for: UIControlState.normal)
-                ButtonD.isHidden = false
                 ButtonD.setTitle(questionObj.options[3], for: UIControlState.normal)
             default: print("Question Type Not Accepted")
             }
-            
-            
             askedQuestions.append(indexOfSelectedQuestion)
         } else {
             displayQuestion()
@@ -123,90 +118,143 @@ class ViewController: UIViewController {
         ButtonD.isHidden = true
         answerResponse.isHidden = true
         
-        // Display plavargain button
+        // Display play again button
         playAgainButton.isHidden = false
         questionField.text = "Way to go!\nYou got \(correctQuestions) out of \(questionsPerRound) correct!"
         let scorePercentage: Double = Double(correctQuestions) / Double(questionsPerRound)
         if (scorePercentage >= 0.5) {
-            playGoodGameSound()
+            playSound(sound: goodGame)
         } else {
-            playBadGameSound()
+            playSound(sound: badGame)
         }
     }
     
     @IBAction func checkAnswer(_ sender: UIButton) {
         // Increment the questions asked counter
+        var quizType: QuestionType
+        if (quizID == 0) {
+            quizType = triviaModel[indexOfSelectedQuestion].type
+        } else {
+            quizType = QuestionType.mathquiz
+        }
         questionsAsked += 1
-        
         var showCorrectButton: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
         let correctAnswer = selectedQuestionObj.answer
         answerResponse.isHidden = false
-
-        switch triviaModel[indexOfSelectedQuestion].type {
+        
+        switch quizType {
         case QuestionType.truefalse:
             if (sender === ButtonA && correctAnswer == 1) || (sender === ButtonB && correctAnswer == 0) {
                 correctQuestions += 1
-                playAnswerCorrectSound()
-                answerResponse.text = correctTxt
-                answerResponse.textColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                playSound(sound: correctSound)
+                answerResponse.text = correctResponse
+                answerResponse.textColor = ColorWheel().green
                 if sender === ButtonA {
-                    ButtonA.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonA.backgroundColor = ColorWheel().green
                 } else {
-                    ButtonB.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonB.backgroundColor = ColorWheel().green
                 }
             } else {
-                playanswerIncorrectSound()
-                answerResponse.text = incorrectTxt
-                answerResponse.textColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
+                playSound(sound: incorrectSound)
+                answerResponse.text = incorrectResponse
+                answerResponse.textColor = ColorWheel().red
                 if sender === ButtonA {
-                    ButtonA.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                    ButtonB.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonA.backgroundColor = ColorWheel().red
+                    ButtonB.backgroundColor = ColorWheel().green
                 } else {
-                    ButtonA.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
-                    ButtonB.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
+                    ButtonA.backgroundColor = ColorWheel().green
+                    ButtonB.backgroundColor = ColorWheel().red
                 }
             }
         case QuestionType.fourOption:
-            if (sender === ButtonA && correctAnswer == 0) ||
-               (sender === ButtonB && correctAnswer == 1) ||
-               (sender === ButtonC && correctAnswer == 2) ||
-               (sender === ButtonD && correctAnswer == 3) {
+            if (sender === ButtonA && correctButton == 0) ||
+               (sender === ButtonB && correctButton == 1) ||
+               (sender === ButtonC && correctButton == 2) ||
+               (sender === ButtonD && correctButton == 3) {
+                
                 correctQuestions += 1
-                answerResponse.text = correctTxt
-                answerResponse.textColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
-                playAnswerCorrectSound()
+                answerResponse.text = correctResponse
+                answerResponse.textColor = ColorWheel().green
+                playSound(sound: correctSound)
+                
                 switch sender {
                 case _ where sender === ButtonA:
-                    ButtonA.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonA.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonB:
-                    ButtonB.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonB.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonC:
-                    ButtonC.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonC.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonD:
-                    ButtonD.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonD.backgroundColor = ColorWheel().green
+                default: print("Not a valid button")
+                    
+                }
+                
+            } else {
+                answerResponse.text = incorrectResponse
+                answerResponse.textColor = ColorWheel().red
+                playSound(sound: incorrectSound)
+                switch sender {
+                case _ where sender === ButtonA:
+                    ButtonA.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonB:
+                    ButtonB.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonC:
+                    ButtonC.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonD:
+                    ButtonD.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
+                default: print("Not a valid button")
+                }
+            }
+        case QuestionType.mathquiz:
+            if (sender === ButtonA && correctButton == 0) ||
+               (sender === ButtonB && correctButton == 1) ||
+               (sender === ButtonC && correctButton == 2) ||
+               (sender === ButtonD && correctButton == 3) {
+                
+                correctQuestions += 1
+                answerResponse.text = correctResponse
+                answerResponse.textColor = ColorWheel().green
+                playSound(sound: correctSound)
+                
+                switch sender {
+                case _ where sender === ButtonA:
+                    ButtonA.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonB:
+                    ButtonB.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonC:
+                    ButtonC.backgroundColor = ColorWheel().green
+                case _ where sender === ButtonD:
+                    ButtonD.backgroundColor = ColorWheel().green
                 default: print("Not a valid button")
                 }
                 
             } else {
-                answerResponse.text = incorrectTxt
-                answerResponse.textColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                playanswerIncorrectSound()
+                answerResponse.text = incorrectResponse
+                answerResponse.textColor = ColorWheel().red
+                playSound(sound: incorrectSound)
+                
                 switch sender {
                 case _ where sender === ButtonA:
-                    ButtonA.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                    showCorrectButton[correctAnswer]?.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonA.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonB:
-                    ButtonB.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                    showCorrectButton[correctAnswer]?.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonB.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonC:
-                    ButtonC.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                    showCorrectButton[correctAnswer]?.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonC.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
                 case _ where sender === ButtonD:
-                    ButtonD.backgroundColor = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-                    showCorrectButton[correctAnswer]?.backgroundColor = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
+                    ButtonD.backgroundColor = ColorWheel().red
+                    showCorrectButton[correctAnswer]?.backgroundColor = ColorWheel().green
                 default: print("Not a valid button")
                 }
+                
             }
         default: print("Not a valid question type")
         }
@@ -220,7 +268,11 @@ class ViewController: UIViewController {
             displayScore()
         } else {
             // Continue game
-            displayQuestion()
+            if (quizID == 0) {
+                displayQuestion()
+            } else if quizID == 1 {
+                displayProblem()
+            }
         }
     }
     
@@ -253,59 +305,35 @@ class ViewController: UIViewController {
     }
     
     func setStartBackgroundColor() {
-        ButtonA.backgroundColor = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
-        ButtonB.backgroundColor = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
-        ButtonC.backgroundColor = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
-        ButtonD.backgroundColor = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
+        ButtonA.backgroundColor = ColorWheel().teal
+        ButtonB.backgroundColor = ColorWheel().teal
+        ButtonC.backgroundColor = ColorWheel().teal
+        ButtonD.backgroundColor = ColorWheel().teal
     }
     
-    func loadGameStartSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "gamestart", ofType: "mp3")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL as CFURL, &startSound)
+    func loadGameSounds() {
+        let pathToGameStartFile = Bundle.main.path(forResource: "gamestart", ofType: "mp3")
+        let gameStartURL = URL(fileURLWithPath: pathToGameStartFile!)
+        AudioServicesCreateSystemSoundID(gameStartURL as CFURL, &startSound)
+        
+        let pathToCorrectSoundFile = Bundle.main.path(forResource: "correctsound", ofType: "mp3")
+        let correctSoundURL = URL(fileURLWithPath: pathToCorrectSoundFile!)
+        AudioServicesCreateSystemSoundID(correctSoundURL as CFURL, &correctSound)
+        
+        let pathToIncorrectSoundFile = Bundle.main.path(forResource: "incorrectsound", ofType: "mp3")
+        let incorrectSoundURL = URL(fileURLWithPath: pathToIncorrectSoundFile!)
+        AudioServicesCreateSystemSoundID(incorrectSoundURL as CFURL, &incorrectSound)
+        
+        let pathToGoodGameFile = Bundle.main.path(forResource: "goodRound", ofType: "mp3")
+        let GoodGameURL = URL(fileURLWithPath: pathToGoodGameFile!)
+        AudioServicesCreateSystemSoundID(GoodGameURL as CFURL, &goodGame)
+        
+        let pathToBadGameFile = Bundle.main.path(forResource: "badgame", ofType: "mp3")
+        let BadGameURL = URL(fileURLWithPath: pathToBadGameFile!)
+        AudioServicesCreateSystemSoundID(BadGameURL as CFURL, &badGame)
     }
     
-    func playGameStartSound() {
-        AudioServicesPlaySystemSound(startSound)
-    }
-    
-    func loadAnswerCorrectSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "correctsound", ofType: "mp3")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL as CFURL, &correctSound)
-    }
-    
-    func playAnswerCorrectSound() {
-        AudioServicesPlaySystemSound(correctSound)
-    }
-    
-    func loadAnswerIncorrectSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "incorrectsound", ofType: "mp3")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL as CFURL, &incorrectSound)
-    }
-    
-    func playanswerIncorrectSound() {
-        AudioServicesPlaySystemSound(incorrectSound)
-    }
-    
-    func loadGoodGameSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "goodRound", ofType: "mp3")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL as CFURL, &goodGame)
-    }
-    
-    func playGoodGameSound() {
-        AudioServicesPlaySystemSound(goodGame)
-    }
-    
-    func loadBadGameSound() {
-        let pathToSoundFile = Bundle.main.path(forResource: "badgame", ofType: "mp3")
-        let soundURL = URL(fileURLWithPath: pathToSoundFile!)
-        AudioServicesCreateSystemSoundID(soundURL as CFURL, &badGame)
-    }
-    
-    func playBadGameSound() {
-        AudioServicesPlaySystemSound(badGame)
+    func playSound(sound: SystemSoundID) {
+        AudioServicesPlaySystemSound(sound)
     }
 }

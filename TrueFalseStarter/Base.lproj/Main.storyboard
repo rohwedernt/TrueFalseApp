@@ -227,6 +227,7 @@
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
+                                    <action selector="chooseQuizType:" destination="klI-8E-yND" eventType="touchUpInside" id="lUY-EB-SZQ"/>
                                     <segue destination="BYZ-38-t0r" kind="show" animates="NO" id="yF7-24-gNE"/>
                                 </connections>
                             </button>
@@ -244,6 +245,10 @@
                                         <integer key="value" value="10"/>
                                     </userDefinedRuntimeAttribute>
                                 </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="chooseQuizType:" destination="klI-8E-yND" eventType="touchUpInside" id="xz1-YK-z0l"/>
+                                    <segue destination="BYZ-38-t0r" kind="show" id="1PF-0y-wXX"/>
+                                </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Set Background" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Ep-AB-zIJ">
                                 <rect key="frame" x="95" y="485" width="184" height="58"/>
@@ -333,4 +338,7 @@
             <point key="canvasLocation" x="-741.60000000000002" y="51.724137931034484"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="yF7-24-gNE"/>
+    </inferredMetricsTieBreakers>
 </document>
