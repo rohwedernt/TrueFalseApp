@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "TrueFalseStarter/ViewController.swift"
-            timestampString = "503288247.211013"
+            timestampString = "503365395.888733"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "168"
-            endingLineNumber = "168"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "checkAnswer(_:)"
             landmarkType = "7">
          </BreakpointContent>

@@ -31,7 +31,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var ButtonD: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var home: UIButton!
-    @IBOutlet weak var triviaTitle: UILabel!
     @IBOutlet weak var bossTitle: UILabel!
     
 
@@ -59,7 +58,6 @@ class ViewController: UIViewController {
     }
     
     func setUIForHome() {
-        triviaTitle.isHidden = false
         bossTitle.isHidden = false
         ButtonB.setTitle("Start Trivia Game", for: UIControlState.normal)
         ButtonC.setTitle("Start Math Game", for: UIControlState.normal)
@@ -75,7 +73,6 @@ class ViewController: UIViewController {
     
     func setUIForQuiz() {
         home.isHidden = false
-        triviaTitle.isHidden = true
         bossTitle.isHidden = true
         ButtonA.isHidden = false
         ButtonB.isHidden = false
