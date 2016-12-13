@@ -16,13 +16,12 @@ class ViewController: UIViewController {
     var questionsAsked = 0
     var correctQuestions = 0
     var indexOfSelectedQuestion: Int = 0
+    var quizType: QuestionType = QuestionType.mathquiz
+    var correctButton: Int = 0
+    let backgroundImage = UIColor(patternImage: UIImage(named: "titlebackground.jpg")!)
+    var quizID: Int = 2
     
-    var startSound: SystemSoundID = 0
-    var correctSound: SystemSoundID = 1
-    var incorrectSound: SystemSoundID = 2
-    var goodGame: SystemSoundID = 3
-    var badGame: SystemSoundID = 4
-    
+    // Button references
     @IBOutlet weak var questionField: UILabel!
     @IBOutlet weak var answerResponse: UILabel!
     @IBOutlet weak var ButtonA: UIButton!
@@ -31,22 +30,17 @@ class ViewController: UIViewController {
     @IBOutlet weak var ButtonD: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var home: UIButton!
+    @IBOutlet weak var triviaTitle: UILabel!
+    @IBOutlet weak var bossTitle: UILabel!
     
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        switch backgroundID {
-        case 1: self.view.backgroundColor = BackgroundImages().space
-        case 2: self.view.backgroundColor = BackgroundImages().beach
-        case 3: self.view.backgroundColor = BackgroundImages().landscape
-        default: print("Background not available")
-        }
+        self.view.backgroundColor = backgroundImage
         loadGameSounds()
-        
+        setStartBackgroundColor()
+        setUIForHome()
         // Start game
-        playSound(sound: startSound)
-        selectQuiz()
     }
 
     override func didReceiveMemoryWarning() {
@@ -54,17 +48,30 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func selectQuiz() {
-        if (quizID == 0) {
-            displayQuestion()
-        } else if quizID == 1 {
-            displayProblem()
-        }
+    func setUIForHome() {
+        ButtonB.setTitle("Start Trivia Game", for: UIControlState.normal)
+        ButtonC.setTitle("Start Math Game", for: UIControlState.normal)
+        ButtonA.isHidden = true
+        ButtonD.isHidden = true
+        questionField.isHidden = true
+        playAgainButton.isHidden = true
+        answerResponse.isHidden = true
+        home.isHidden = true
     }
     
-    var correctButton: Int = 0
+    func setUIForQuiz() {
+        home.isHidden = false
+        triviaTitle.isHidden = true
+        bossTitle.isHidden = true
+        ButtonA.isHidden = false
+        ButtonB.isHidden = false
+        ButtonC.isHidden = false
+        ButtonD.isHidden = false
+        questionField.isHidden = false
+    }
     
     func displayProblem() {
+        setUIForQuiz()
         setStartBackgroundColor()
         let buttonCorrect = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
         let firstTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 50)
@@ -83,7 +90,7 @@ class ViewController: UIViewController {
     }
     
     func displayQuestion() {
-        
+        setUIForQuiz()
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.count)
         let questionObj = triviaModel[indexOfSelectedQuestion]
         setStartBackgroundColor()
@@ -132,13 +139,14 @@ class ViewController: UIViewController {
     }
     
     @IBAction func checkAnswer(_ sender: UIButton) {
+        if (sender.currentTitle == "Start Trivia Game") {
+            quizID = 0
+            displayQuestion()
+            } else if (sender.currentTitle == "Start Math Game") {
+            quizID = 1
+            displayProblem()
+            } else {
         // Increment the questions asked counter
-        var quizType: QuestionType
-        if (quizID == 0) {
-            quizType = triviaModel[indexOfSelectedQuestion].type
-        } else {
-            quizType = QuestionType.mathquiz
-        }
         questionsAsked += 1
         var showCorrectButton: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
@@ -261,8 +269,8 @@ class ViewController: UIViewController {
         default: print("Not a valid question type")
         }
         loadNextRoundWithDelay(seconds: 1)
+        }
     }
-    
     
     func nextRound() {
         if questionsAsked == questionsPerRound {
@@ -289,7 +297,6 @@ class ViewController: UIViewController {
         correctQuestions = 0
         nextRound()
     }
-    
 
     
     // MARK: Helper Methods
@@ -307,35 +314,9 @@ class ViewController: UIViewController {
     }
     
     func setStartBackgroundColor() {
-        ButtonA.backgroundColor = ColorWheel().teal
-        ButtonB.backgroundColor = ColorWheel().teal
-        ButtonC.backgroundColor = ColorWheel().teal
-        ButtonD.backgroundColor = ColorWheel().teal
-    }
-    
-    func loadGameSounds() {
-        let pathToGameStartFile = Bundle.main.path(forResource: "gamestart", ofType: "mp3")
-        let gameStartURL = URL(fileURLWithPath: pathToGameStartFile!)
-        AudioServicesCreateSystemSoundID(gameStartURL as CFURL, &startSound)
-        
-        let pathToCorrectSoundFile = Bundle.main.path(forResource: "correctsound", ofType: "mp3")
-        let correctSoundURL = URL(fileURLWithPath: pathToCorrectSoundFile!)
-        AudioServicesCreateSystemSoundID(correctSoundURL as CFURL, &correctSound)
-        
-        let pathToIncorrectSoundFile = Bundle.main.path(forResource: "incorrectsound", ofType: "mp3")
-        let incorrectSoundURL = URL(fileURLWithPath: pathToIncorrectSoundFile!)
-        AudioServicesCreateSystemSoundID(incorrectSoundURL as CFURL, &incorrectSound)
-        
-        let pathToGoodGameFile = Bundle.main.path(forResource: "goodRound", ofType: "mp3")
-        let GoodGameURL = URL(fileURLWithPath: pathToGoodGameFile!)
-        AudioServicesCreateSystemSoundID(GoodGameURL as CFURL, &goodGame)
-        
-        let pathToBadGameFile = Bundle.main.path(forResource: "badgame", ofType: "mp3")
-        let BadGameURL = URL(fileURLWithPath: pathToBadGameFile!)
-        AudioServicesCreateSystemSoundID(BadGameURL as CFURL, &badGame)
-    }
-    
-    func playSound(sound: SystemSoundID) {
-        AudioServicesPlaySystemSound(sound)
+        ButtonA.backgroundColor = ColorWheel().black
+        ButtonB.backgroundColor = ColorWheel().black
+        ButtonC.backgroundColor = ColorWheel().black
+        ButtonD.backgroundColor = ColorWheel().black
     }
 }

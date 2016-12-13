@@ -7,12 +7,12 @@
 //
 
 import UIKit
+import AudioToolbox
 
 
 enum QuestionType {
     case truefalse
     case fourOption
-    case threeOption
     case mathquiz
 }
 
@@ -115,15 +115,44 @@ let correctResponse = "Correct!"
 let incorrectResponse = "Sorry, that's not it."
 
 struct ColorWheel {
-        let green = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 1.0)
-        let red = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 1.0)
-        let teal = UIColor(red: (12/255),  green: (121/255), blue: (150/255), alpha: 1.0)
+    let green = UIColor(red: (94/255), green: (207/255), blue: (78/255), alpha: 0.7)
+    let red = UIColor(red: (210/255), green: (39/255), blue: (29/255), alpha: 0.7)
+    let black = UIColor(red: (0.0),  green: (0.0), blue: (0.0), alpha: 0.7)
     }
 
-struct BackgroundImages {
-        let space = UIColor(patternImage: UIImage(named: "starsbackground.jpg")!)
-        let landscape = UIColor(patternImage: UIImage(named: "landscapebackground.jpg")!)
-        let beach = UIColor(patternImage: UIImage(named: "beachbackground.jpg")!)
+var startSound: SystemSoundID = 0
+var correctSound: SystemSoundID = 0
+var incorrectSound: SystemSoundID = 0
+var goodGame: SystemSoundID = 0
+var badGame: SystemSoundID = 0
+var gamesound: SystemSoundID = 0
+
+func loadGameSounds() {
+    let pathToGameStartFile = Bundle.main.path(forResource: "gamestart", ofType: "mp3")
+    let gameStartURL = URL(fileURLWithPath: pathToGameStartFile!)
+    AudioServicesCreateSystemSoundID(gameStartURL as CFURL, &startSound)
+    
+    let pathToCorrectSoundFile = Bundle.main.path(forResource: "correctsound", ofType: "mp3")
+    let correctSoundURL = URL(fileURLWithPath: pathToCorrectSoundFile!)
+    AudioServicesCreateSystemSoundID(correctSoundURL as CFURL, &correctSound)
+    
+    let pathToIncorrectSoundFile = Bundle.main.path(forResource: "incorrectsound", ofType: "mp3")
+    let incorrectSoundURL = URL(fileURLWithPath: pathToIncorrectSoundFile!)
+    AudioServicesCreateSystemSoundID(incorrectSoundURL as CFURL, &incorrectSound)
+    
+    let pathToGoodGameFile = Bundle.main.path(forResource: "goodRound", ofType: "mp3")
+    let GoodGameURL = URL(fileURLWithPath: pathToGoodGameFile!)
+    AudioServicesCreateSystemSoundID(GoodGameURL as CFURL, &goodGame)
+    
+    let pathToBadGameFile = Bundle.main.path(forResource: "badgame", ofType: "mp3")
+    let BadGameURL = URL(fileURLWithPath: pathToBadGameFile!)
+    AudioServicesCreateSystemSoundID(BadGameURL as CFURL, &badGame)
+    
+    let pathToGameOpenFile = Bundle.main.path(forResource: "GameSound", ofType: "wav")
+    let GameOpenURL = URL(fileURLWithPath: pathToGameOpenFile!)
+    AudioServicesCreateSystemSoundID(GameOpenURL as CFURL, &gamesound)
 }
 
-
+func playSound(sound: SystemSoundID) {
+    AudioServicesPlaySystemSound(sound)
+}
