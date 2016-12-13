@@ -49,10 +49,23 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func goHome(_ sender: UIButton) {
+        if (sender === home) {
+            viewDidLoad()
+            askedQuestions.removeAll()
+            questionsAsked = 0
+            correctQuestions = 0
+        }
+    }
+    
     func setUIForHome() {
+        triviaTitle.isHidden = false
+        bossTitle.isHidden = false
         ButtonB.setTitle("Start Trivia Game", for: UIControlState.normal)
         ButtonC.setTitle("Start Math Game", for: UIControlState.normal)
         ButtonA.isHidden = true
+        ButtonB.isHidden = false
+        ButtonC.isHidden = false
         ButtonD.isHidden = true
         questionField.isHidden = true
         playAgainButton.isHidden = true
@@ -153,7 +166,6 @@ class ViewController: UIViewController {
         questionsAsked += 1
         var showCorrectButton: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
-        correctButton = selectedQuestionObj.answer
         correctAnswer = selectedQuestionObj.answer
         answerResponse.isHidden = false
         
@@ -182,10 +194,10 @@ class ViewController: UIViewController {
                 }
             }
         case QuestionType.fourOption:
-            if (sender === ButtonA && correctButton == 0) ||
-               (sender === ButtonB && correctButton == 1) ||
-               (sender === ButtonC && correctButton == 2) ||
-               (sender === ButtonD && correctButton == 3) {
+            if (sender === ButtonA && correctAnswer == 0) ||
+               (sender === ButtonB && correctAnswer == 1) ||
+               (sender === ButtonC && correctAnswer == 2) ||
+               (sender === ButtonD && correctAnswer == 3) {
                 
                 correctQuestions += 1
                 answerResponse.text = correctResponse
@@ -226,10 +238,11 @@ class ViewController: UIViewController {
                 }
             }
         case QuestionType.mathquiz:
-            if (sender === ButtonA && correctButton == 0) ||
-               (sender === ButtonB && correctButton == 1) ||
-               (sender === ButtonC && correctButton == 2) ||
-               (sender === ButtonD && correctButton == 3) {
+            correctAnswer = correctButton
+            if (sender === ButtonA && correctAnswer == 0) ||
+               (sender === ButtonB && correctAnswer == 1) ||
+               (sender === ButtonC && correctAnswer == 2) ||
+               (sender === ButtonD && correctAnswer == 3) {
                 
                 correctQuestions += 1
                 answerResponse.text = correctResponse
