@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     var correctButton: Int = 0
     let backgroundImage = UIColor(patternImage: UIImage(named: "titlebackground.jpg")!)
     var quizID: Int = 2
+    var correctAnswer: Int = 0
     
     // Button references
     @IBOutlet weak var questionField: UILabel!
@@ -94,6 +95,7 @@ class ViewController: UIViewController {
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.count)
         let questionObj = triviaModel[indexOfSelectedQuestion]
         setStartBackgroundColor()
+        quizType = questionObj.type
         if (!askedQuestions.contains(indexOfSelectedQuestion)) {
             questionField.text = questionObj.question
             answerResponse.isHidden = true
@@ -141,6 +143,7 @@ class ViewController: UIViewController {
     @IBAction func checkAnswer(_ sender: UIButton) {
         if (sender.currentTitle == "Start Trivia Game") {
             quizID = 0
+            
             displayQuestion()
             } else if (sender.currentTitle == "Start Math Game") {
             quizID = 1
@@ -150,7 +153,8 @@ class ViewController: UIViewController {
         questionsAsked += 1
         var showCorrectButton: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
-        let correctAnswer = selectedQuestionObj.answer
+        correctButton = selectedQuestionObj.answer
+        correctAnswer = selectedQuestionObj.answer
         answerResponse.isHidden = false
         
         switch quizType {
