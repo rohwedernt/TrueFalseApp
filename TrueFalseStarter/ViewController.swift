@@ -38,8 +38,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = backgroundImage
         loadGameSounds()
+        playSound(sound: startSound)
         setStartBackgroundColor()
-        setUIForHome()
+        setHomeUI()
         // Start game
     }
 
@@ -48,6 +49,7 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    // Home navigation to go back to home ui
     @IBAction func goHome(_ sender: UIButton) {
         if (sender === home) {
             viewDidLoad()
@@ -57,7 +59,8 @@ class ViewController: UIViewController {
         }
     }
     
-    func setUIForHome() {
+    // Home UI
+    func setHomeUI() {
         bossTitle.isHidden = false
         ButtonB.setTitle("Start Trivia Game", for: UIControlState.normal)
         ButtonC.setTitle("Start Math Game", for: UIControlState.normal)
@@ -71,7 +74,8 @@ class ViewController: UIViewController {
         home.isHidden = true
     }
     
-    func setUIForQuiz() {
+    // Quiz UI
+    func setQuizUI() {
         home.isHidden = false
         bossTitle.isHidden = true
         ButtonA.isHidden = false
@@ -81,8 +85,9 @@ class ViewController: UIViewController {
         questionField.isHidden = false
     }
     
+    // Displays math problem
     func displayProblem() {
-        setUIForQuiz()
+        setQuizUI()
         setStartBackgroundColor()
         let buttonCorrect = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
         let firstTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 50)
@@ -100,8 +105,9 @@ class ViewController: UIViewController {
         }
     }
     
+    // Displays trivia question
     func displayQuestion() {
-        setUIForQuiz()
+        setQuizUI()
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.count)
         let questionObj = triviaModel[indexOfSelectedQuestion]
         setStartBackgroundColor()
@@ -151,9 +157,9 @@ class ViewController: UIViewController {
     }
     
     @IBAction func checkAnswer(_ sender: UIButton) {
+        // check which quiz type is in play
         if (sender.currentTitle == "Start Trivia Game") {
             quizID = 0
-            
             displayQuestion()
             } else if (sender.currentTitle == "Start Math Game") {
             quizID = 1
@@ -280,7 +286,6 @@ class ViewController: UIViewController {
                 }
                 
             }
-        default: print("Not a valid question type")
         }
         loadNextRoundWithDelay(seconds: 1)
         }
