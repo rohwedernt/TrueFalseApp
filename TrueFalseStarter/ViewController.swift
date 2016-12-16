@@ -20,6 +20,7 @@ class ViewController: UIViewController {
     var correctButton: Int = 0
     let backgroundImage = UIColor(patternImage: UIImage(named: "titlebackground.jpg")!)
     var quizID: Int = 2
+    var correctAnswer: Int = 0
     
     // Button references
     @IBOutlet weak var questionField: UILabel!
@@ -30,7 +31,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var ButtonD: UIButton!
     @IBOutlet weak var playAgainButton: UIButton!
     @IBOutlet weak var home: UIButton!
-    @IBOutlet weak var triviaTitle: UILabel!
     @IBOutlet weak var bossTitle: UILabel!
     
 
@@ -38,8 +38,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = backgroundImage
         loadGameSounds()
+        playSound(sound: startSound)
         setStartBackgroundColor()
-        setUIForHome()
+        setHomeUI()
         // Start game
     }
 
@@ -48,10 +49,24 @@ class ViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func setUIForHome() {
+    // Home navigation to go back to home ui
+    @IBAction func goHome(_ sender: UIButton) {
+        if (sender === home) {
+            viewDidLoad()
+            askedQuestions.removeAll()
+            questionsAsked = 0
+            correctQuestions = 0
+        }
+    }
+    
+    // Home UI
+    func setHomeUI() {
+        bossTitle.isHidden = false
         ButtonB.setTitle("Start Trivia Game", for: UIControlState.normal)
         ButtonC.setTitle("Start Math Game", for: UIControlState.normal)
         ButtonA.isHidden = true
+        ButtonB.isHidden = false
+        ButtonC.isHidden = false
         ButtonD.isHidden = true
         questionField.isHidden = true
         playAgainButton.isHidden = true
@@ -59,9 +74,9 @@ class ViewController: UIViewController {
         home.isHidden = true
     }
     
-    func setUIForQuiz() {
+    // Quiz UI
+    func setQuizUI() {
         home.isHidden = false
-        triviaTitle.isHidden = true
         bossTitle.isHidden = true
         ButtonA.isHidden = false
         ButtonB.isHidden = false
@@ -70,8 +85,9 @@ class ViewController: UIViewController {
         questionField.isHidden = false
     }
     
+    // Displays math problem
     func displayProblem() {
-        setUIForQuiz()
+        setQuizUI()
         setStartBackgroundColor()
         let buttonCorrect = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
         let firstTerm = GKRandomSource.sharedRandom().nextInt(upperBound: 50)
@@ -89,11 +105,13 @@ class ViewController: UIViewController {
         }
     }
     
+    // Displays trivia question
     func displayQuestion() {
-        setUIForQuiz()
+        setQuizUI()
         indexOfSelectedQuestion = GKRandomSource.sharedRandom().nextInt(upperBound: triviaModel.count)
         let questionObj = triviaModel[indexOfSelectedQuestion]
         setStartBackgroundColor()
+        quizType = questionObj.type
         if (!askedQuestions.contains(indexOfSelectedQuestion)) {
             questionField.text = questionObj.question
             answerResponse.isHidden = true
@@ -139,6 +157,7 @@ class ViewController: UIViewController {
     }
     
     @IBAction func checkAnswer(_ sender: UIButton) {
+        // check which quiz type is in play
         if (sender.currentTitle == "Start Trivia Game") {
             quizID = 0
             displayQuestion()
@@ -150,7 +169,7 @@ class ViewController: UIViewController {
         questionsAsked += 1
         var showCorrectButton: [Int:UIButton] = [0: ButtonA, 1: ButtonB, 2: ButtonC, 3: ButtonD]
         let selectedQuestionObj = triviaModel[indexOfSelectedQuestion]
-        let correctAnswer = selectedQuestionObj.answer
+        correctAnswer = selectedQuestionObj.answer
         answerResponse.isHidden = false
         
         switch quizType {
@@ -178,10 +197,10 @@ class ViewController: UIViewController {
                 }
             }
         case QuestionType.fourOption:
-            if (sender === ButtonA && correctButton == 0) ||
-               (sender === ButtonB && correctButton == 1) ||
-               (sender === ButtonC && correctButton == 2) ||
-               (sender === ButtonD && correctButton == 3) {
+            if (sender === ButtonA && correctAnswer == 0) ||
+               (sender === ButtonB && correctAnswer == 1) ||
+               (sender === ButtonC && correctAnswer == 2) ||
+               (sender === ButtonD && correctAnswer == 3) {
                 
                 correctQuestions += 1
                 answerResponse.text = correctResponse
@@ -222,10 +241,11 @@ class ViewController: UIViewController {
                 }
             }
         case QuestionType.mathquiz:
-            if (sender === ButtonA && correctButton == 0) ||
-               (sender === ButtonB && correctButton == 1) ||
-               (sender === ButtonC && correctButton == 2) ||
-               (sender === ButtonD && correctButton == 3) {
+            correctAnswer = correctButton
+            if (sender === ButtonA && correctAnswer == 0) ||
+               (sender === ButtonB && correctAnswer == 1) ||
+               (sender === ButtonC && correctAnswer == 2) ||
+               (sender === ButtonD && correctAnswer == 3) {
                 
                 correctQuestions += 1
                 answerResponse.text = correctResponse
@@ -266,7 +286,6 @@ class ViewController: UIViewController {
                 }
                 
             }
-        default: print("Not a valid question type")
         }
         loadNextRoundWithDelay(seconds: 1)
         }
