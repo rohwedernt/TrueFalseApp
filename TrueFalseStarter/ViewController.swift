@@ -87,6 +87,7 @@ class ViewController: UIViewController {
     
     // Displays math problem
     func displayProblem() {
+        quizType = QuestionType.mathquiz
         setQuizUI()
         setStartBackgroundColor()
         let buttonCorrect = GKRandomSource.sharedRandom().nextInt(upperBound: 3)
